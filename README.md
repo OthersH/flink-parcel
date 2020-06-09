@@ -11,11 +11,11 @@ CDH除了能够管理自生所提供的一些大数据相关服务外，还允�
 
 文件名称格式为三段，第一段是包名，第二段是版本号，第三段是运行平台。
 
-例如：FLINK-1.9.0-bin-scala_2.12-el7.parcel
+例如：FLINK-1.9.1-BIN-SCALA_2.11-el7.parcel
 
 **包名**：FLINK
 
-**版本号**：1.9.0-bin-scala_2.12
+**版本号**：1.9.1-BIN-SCALA_2.11
 
 **运行环境**：el7
 
@@ -28,18 +28,22 @@ parcel必须包置于/opt/cloudera/parcel-repo/目录下才可以被CDH发布程
 
 ==**ps**==:  
 csd的jar包必须置于/opt/cloudera/csd/目录才可以在添加集群服务时被识别到。
-
+```
+#一定要重启cloudera-scm-server 不然添加服务不会发现新的服务
+systemctl restart cloudera-scm-server
+```
+  
 
 
 
 ## flink-parcel制作过程
 
-以CDH6.1、FLINK1.9.0为例
+以CDH6.1、FLINK1.9.1为例
 
 (1)**下载制作包**
 
 ```
-git clone https://github.com/pecanNBU/flink-parcel.git
+git clone https://github.com/OthersH/flink-parcel.git
 ```
 (2)**修改配置文件**　flink-parcel.properties
 
@@ -49,10 +53,10 @@ git clone https://github.com/pecanNBU/flink-parcel.git
 FLINK_URL=http://mirrors.tuna.tsinghua.edu.cn/apache/flink/flink-1.9.0/flink-1.9.0-bin-scala_2.12.tgz
 
 #flink版本号
-FLINK_VERSION=1.9.0
+FLINK_VERSION=1.9.1
 
 #扩展版本号
-EXTENS_VERSION=BIN-SCALA_2.12
+EXTENS_VERSION=BIN-SCALA_2.11
 
 #操作系统版本，以centos为例
 OS_VERSION=7
@@ -106,6 +110,23 @@ CDH_MAX=6
 (1) 在如果集群开启了安全，需要配置security.kerberos.login.keytab和security.kerberos.login.principal两个参数才能正正常启动。如未启动kerberos,则在CDH中添加FLINK服务时请清空这两个参数的内容
 
 (2) If you plan to use Apache Flink together with Apache Hadoop (run Flink on YARN, connect to HDFS, connect to HBase, or use some Hadoop-based file system connector) then select the download that bundles the matching Hadoop version, download the optional pre-bundled Hadoop that matches your version and place it in the lib folder of Flink, or export your HADOOP_CLASSPATH（来自flink官网）
+
+(3)flink启动不起来，strerr.log报以下错
+```
+[21/Jan/2020 16:40:09 +0000] 27087 MainThread redactor     ERROR    Redaction rules file doesn't exist, not redacting logs. file: redaction-rules.json, directory: /run/cloudera-scm-agent/process/2657-flink_on_yarn-FLINK_YARN
+```
+```
+#下载flink-shaded-hadoop 放在lib库里即可
+# /opt/cloudera/parcels/FLINK/lib/flink/lib  
+# wget https://repo.maven.apache.org/maven2/org/apache/flink/flink-shaded-hadoop-2-uber/2.6.5-7.0/flink-shaded-hadoop-2-uber-2.6.5-7.0.jar  
+  
+# scp flink-shaded-hadoop-2-uber-2.6.5-7.0.jar bigserver2:/opt/cloudera/parcels/FLINK/lib/flink/lib  
+# scp flink-shaded-hadoop-2-uber-2.6.5-7.0.jar bigserver3:/opt/cloudera/parcels/FLINK/lib/flink/lib  
+# scp flink-shaded-hadoop-2-uber-2.6.5-7.0.jar bigserver4:/opt/cloudera/parcels/FLINK/lib/flink/lib  
+# scp flink-shaded-hadoop-2-uber-2.6.5-7.0.jar bigserver5:/opt/cloudera/parcels/FLINK/lib/flink/lib  
+  
+# export HADOOP_CLASSPATH=/opt/cloudera/parcels/FLINK/lib/flink/lib 
+```
 
 
 ## 相关参考：　　
