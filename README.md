@@ -138,5 +138,5 @@ CDH_MAX=6
 [FLINK官方下载地址](https://archive.apache.org/dist/flink/)
 
 [CDH添加第三方服务的方法](https://blog.csdn.net/tony_328427685/article/details/86514385)
-
+[CDH添加第三方服务的方法](http://blog.51yip.com/hadoop/2362.html)
       
